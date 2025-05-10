@@ -1,197 +1,523 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <title>每秒23兆字节</title>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>现代响应式网页设计</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
-        * {
-            box-sizing: border-box;
+      :root {
+        --primary-color: #1115f4;
+        --secondary-color: #eb0b21fe;
+        --accent-color: #fc0000;
+        --dark-color: #2d3436;
+        --light-color: #f8f9fa;
+        --img-interaction: url("https://source.unsplash.com/random/800x600?webdesign");
+        --img-ai: url("https://source.unsplash.com/random/800x600?ai");
+        --img-profile: url("https://source.unsplash.com/random/600x400?developer");
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--light-color);
+        color: var(--dark-color);
+        line-height: 1.6;
+      }
+
+      /* 优化后的头部 */
+      .header {
+        padding: 80px 15px;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        position: relative;
+        overflow: hidden;
+        clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+        margin-bottom: 30px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        pointer-events: none;
+      }
+
+      .header h1 {
+        font-size: 2.2rem;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: slideUp 0.8s ease forwards;
+      }
+
+      .header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-top: 12px;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: slideUp 0.8s ease 0.2s forwards;
+      }
+
+      /* 优化导航栏 */
+      .topnav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin: -20px auto 20px;
+        max-width: 100%;
+        border-radius: 0;
+        transition: all 0.3s ease;
+      }
+
+      .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 15px;
+      }
+
+      .topnav a {
+        color: var(--dark-color);
+        text-decoration: none;
+        padding: 20px 25px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .topnav a::after {
+        content: "";
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background: var(--primary-color);
+        transition: all 0.3s ease;
+      }
+
+      .topnav a:hover::after {
+        width: 60%;
+      }
+
+      .topnav a.active {
+        color: var(--primary-color);
+      }
+
+      .topnav a i {
+        margin-right: 10px;
+        font-size: 1.1em;
+      }
+
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 992px) {
+        .nav-links {
+          position: fixed;
+          top: 60px;
+          left: 0;
+          right: 0;
+          background: rgba(255, 255, 255, 0.98);
+          flex-direction: column;
+          padding: 10px;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
         }
 
-        body {
-            font-family: Arial;
-            padding: 10px;
-            background: #f1f1f1;
+        .nav-links.active {
+          max-height: 500px;
         }
 
-        /* 头部标题 */
-        .header {
-            padding: 30px;
-            text-align: center;
-            background: white;
+        .menu-toggle {
+          display: block;
         }
 
-        .header h1 {
-            font-size: 50px;
-        }
-
-        /* 导航条 */
-        .topnav {
-            overflow: hidden;
-            background-color: #333;
-        }
-
-        /* 导航条链接 */
         .topnav a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
+          padding: 12px;
+          justify-content: center;
         }
+      }
 
-        /* 链接颜色修改 */
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
+      /* 优化主布局 */
+      .row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      .rightcolumn {
+        order: -1;
+        position: static;
+        margin-bottom: 20px;
+      }
+
+      /* 卡片效果优化 */
+      .card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        margin-top: 15px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .card h2 {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .card h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--accent-color);
+        border-radius: 2px;
+      }
+
+      /* 图像优化 */
+      .fakeimg {
+        background: linear-gradient(
+            45deg,
+            rgb(255, 255, 255),
+            rgb(255, 255, 255)
+          ),
+          var(--img-src) center/cover;
+        height: 180px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .fakeimg[data-img="interaction"] {
+        --img-src: var(--img-interaction);
+      }
+      .fakeimg[data-img="ai"] {
+        --img-src: var(--img-ai);
+      }
+      .fakeimg[data-img="profile"] {
+        --img-src: var(--img-profile);
+      }
+
+      /* 标签云优化 */
+      .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tag {
+        background: rgba(100, 87, 191, 0.1);
+        color: var(--primary-color);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .tag:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      /* 底部优化 */
+      .footer {
+        background: var(--dark-color);
+        color: white;
+        padding: 25px 15px;
+        margin-top: 50px;
+        text-align: center;
+        clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0;
+      }
+
+      .social-links a {
+        color: white;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .social-links a .fa-weixin {
+        color: #09bb07;
+      }
+      .social-links a .fa-qq {
+        color: #12b7f5;
+      }
+
+      .social-links a:hover {
+        color: var(--accent-color);
+        transform: translateY(-3px);
+      }
+
+      @keyframes slideUp {
+        to {
+          transform: translateY(0);
+          opacity: 1;
         }
+      }
 
-        /* 创建两列 */
-        /* Left column */
-        .leftcolumn {
-            float: left;
-            width: 75%;
+      @media (min-width: 768px) {
+        .header {
+          padding: 100px 30px;
+          clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
-
-        /* 右侧栏 */
+        .header h1 {
+          font-size: 3rem;
+        }
+        .header p {
+          font-size: 1.2rem;
+        }
+        .row {
+          grid-template-columns: 1fr 300px;
+        }
         .rightcolumn {
-            float: left;
-            width: 25%;
-            background-color: #f1f1f1;
-            padding-left: 20px;
+          order: 0;
+          position: sticky;
+          top: 100px;
         }
+      }
 
-        /* 图像部分 */
-        .fakeimg {
-            background-color: #ffffff;
-            width: 100%;
-            padding: 4px;
+      @media (max-width: 480px) {
+        .card h2 {
+          font-size: 1.4rem;
         }
-
-        /* 文章卡片效果 */
-        .card {
-            background-color: white;
-            padding: 30px;
-            margin-top: 40px;
+        .tag {
+          padding: 6px 12px;
+          font-size: 0.8rem;
         }
-
-        /* 列后面清除浮动 */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* 底部 */
-        .footer {
-            padding: 20px;
-            text-align: center;
-            background: #ddd;
-            margin-top: 20px;
-        }
-
-        /* 响应式布局 - 屏幕尺寸小于 800px 时，两列布局改为上下布局 */
-        @media screen and (max-width: 800px) {
-
-            .leftcolumn,
-            .rightcolumn {
-                width: 100%;
-                padding: 0;
-            }
-        }
-
-        /* 响应式布局 -屏幕尺寸小于 400px 时，导航等布局改为上下布局 */
-        @media screen and (max-width: 400px) {
-            .topnav a {
-                float: none;
-                width: 100%;
-            }
-        }
+      }
     </style>
-</head>
-
-<body>
+  </head>
+  <body>
     <div class="header">
-        <h1>欢迎来到我的网站</h1>
-        <p>该网站目前处于起步阶段，后续更新可能比较慢，更多功能请敬请期待</p>
+      <h1>23兆新闻网</h1>
+      <p>本台承诺以下内容纯属虚构</p>
     </div>
 
-    <div class="topnav">
-        <a href="#">测试</a>
-        <a href="#">测试</a>
-        <a href="#">测试</a>
-        <a href="#" style="float: right">测试</a>
-    </div>
+    <nav class="topnav" id="topnav">
+      <div class="nav-container">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-links">
+          <a href="#" class="active"><i class="fas fa-home"></i>首页</a>
+          <a href="#"><i class="fas fa-concierge-bell"></i>服务</a>
+          <a href="#"><i class="fas fa-users"></i>关于我</a>
+          <a href="#"><i class="fas fa-sign-in-alt"></i>登录</a>
+        </div>
+      </div>
+    </nav>
 
     <div class="row">
-        <div class="leftcolumn">
-            <div class="card">
-                <h2>M4A1卡宾枪：现代战场的中坚力量</h2>
-                <h5>2025 年 4 月 26日</h5>
-                <div class="fakeimg" style="height: 220px">
-                    <img src="https://i.imgs.ovh/2025/04/26/fvgsC.jpeg" alt="fvgsC.jpeg" border="5" width="400"
-                        height="230" />
-                </div>
-                <p></p>
+      <main class="leftcolumn">
+        <article class="card">
+          <h2>关于网站</h2>
+          <div class="fakeimg" data-img="interaction">
+            <img src=
+            "https://i.imgs.ovh/2025/05/10/voaFp.png" 
+            alt="voaFp.png" border="0"
+            width="610"
+            height="298">
+            ></div>
+          <p>
+            该网站目前处于起步阶段，又是一个人制作 后续更新可能比较慢，
+            有什么bug跟我说就行了，我会尝试修复的，并且我会在未来更新一些新功能，
+            有什么想看的也可以跟我说，我会尝试去做出来的
+          </p>
+          <div class="tag-cloud">
+            <span class="tag">网页设计</span>
+            <span class="tag">classList</span>
+            <span class="tag">前端开发</span>
+          </div>
+        </article>
 
-                M4A1卡宾枪是美国陆军广泛装备的突击步枪，由M16系列改进而来，
-                它采用5.56×45毫米北约标准弹药，
-                具有射速高、后坐力小、精度优良等特点，
-                其模块化设计支持加装战术配件，如瞄准镜、激光指示器和榴弹发射器，
-                适应多种作战需求，M4A1凭借轻便灵活和可靠性能，
-                成为特种部队和常规部队的首选武器， 在现代战争中发挥着关键作用
-                </p>
-            </div>
-            <div class="card">
-                <h1>男子甘某肇事逃逸,警方迅速抓获归案</h1>
-                <h5>2025 年 4 月 26日</h5>
-                <div class="fakeimg" style="height: 240px"><img src="https://i.imgs.ovh/2025/04/26/fFZiH.jpeg"
-                        alt="fFZiH.jpeg" border="5" width="274" height="222">
-                </div>
-                <div class="fakeimg" style="height: 210px"><img src="https://i.imgs.ovh/2025/04/26/fFcnX.jpeg"
-                        alt="fFcnX.jpeg" border="5" width="366 height=" 200"></div>
-                <p>2025年4月25日晚，甘某驾驶一辆鬼火在南宁市科园大道与一辆电动车相撞
-                    ，致骑车人死亡，事故发生后，甘某未停车救助，反而加速逃离现场。
-                    警方接报后迅速展开调查，通过监控锁定嫌疑车辆，并于次日早晨将甘某抓获，
-                    目前，案件正在进一步处理中，
-                    甘某将面临法律严惩
-                </p>
-            </div>
+        <article class="card">
+          <h2>热门新闻</h2>
+          <div class="fakeimg" data-img="ai">
+            <img
+              src="https://i.imgs.ovh/2025/05/10/vYNqX.png"
+              alt="vYNqX.png"
+              border="0"
+              width="140"
+              height="228"
+            /><img
+              src="https://i.imgs.ovh/2025/05/10/vo70F.jpeg"
+              alt="vo70F.jpeg"
+              border="0"
+              width="204"
+              height="228"
+            />
+            <img
+              src="https://i.imgs.ovh/2025/05/10/vY3aU.jpeg"
+              alt="vY3aU.jpeg"
+              border="0"
+              width="304"
+              height="228"
+            />
+            />
+          </div><h1>南宁西乡塘区发生恶性命案 潜逃27天的犯罪嫌疑人甘某落网</h1>
+          <br>
+            近日，南宁市西乡塘区发生一起恶性故意杀人案件，
+            受害者是一名本地官员。<br>案发后， 犯罪嫌疑人甘某迅速潜逃
+            南宁警方高度重视， 立即成立专案组展开侦查。 经过27天的全力追捕，
+            警方通过大数据研判、 走访摸排和跨区域协作，
+            最终在外地将甘某抓获归案。</br>
+            据了解，甘某作案后为逃避法律制裁，多次变换藏匿地点，并试图伪装身份。目前，案件正在进一步侦办中，警方表示将依法严惩凶手。此案的成功侦破，彰显了公安机关打击严重刑事犯罪的决心和能力，有力维护了社会公平正义
+          </p>
+          <div class="tag-cloud">
+            <span class="tag">新闻</span>
+            <span class="tag">热门</span>
+            <span class="tag">猎奇</span>
+          </div>
+        </article>
+      </main>
+
+      <aside class="rightcolumn">
+        <div class="card">
+          <h2>关于作者</h2>
+          <div class="fakeimg" data-img="profile" style="height: 150px">
+            <img
+              src="https://i.imgs.ovh/2025/05/01/r5r00.jpeg"
+              alt="r5r00.jpeg"
+              border="0"
+              width="260"
+              height="180"
+            />
+            />
+          </div>
+          <p>一个只会每天坐在电脑前写代码的废物</p>
         </div>
-        <div class="rightcolumn">
-            <div class="card">
-                <h2>关于我</h2>
-                <p>一个只会每天坐在电脑前写代码的废物</p>
-            </div>
-            <div class="card">
-                <h3>热门文章</h3>
-                <div class="fakeimg">
-                    <p>未开发</p>
-                </div>
-                <div class="fakeimg">
-                    <p>未开发</p>
-                </div>
-                <div class="fakeimg">
-                    <p>未开发</p>
-                </div>
-            </div>
-            <div class="card">
-                <h3>关注网站</h3>
-                <p>该网站目前处于起步阶段，又是一个人制作
-                    后续更新可能比较慢，
-                    有什么bug跟我说就行了
-                    ，我会击尝试修复的，并且我会在未来更新一些新功能，
-                    有什么想看的也可以跟我说，我会尝试去做出来的
-            </div>
+
+        <div class="card">
+          <h2>标签</h2>
+          <div class="tag-cloud">
+            <span class="tag">HTML网页</span>
+            <span class="tag">甘尸</span>
+            <span class="tag">CSS3</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">蛋</span>
+          </div>
         </div>
+      </aside>
     </div>
 
-    <div class="footer">
-        <h1>网站作者QQ：2309194142</h1>
-        <p>作者邮箱：2309194142@qq.com</p>
-    </div>
-</body>
+    <footer class="footer">
+      <div class="social-links">
+        <a href="#"><i class="fab fa-qq"></i></a>
+        <a href="#"><i class="fab fa-weixin"></i></a>
+        <a href="#"><i class="fab fa-github"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <p>© 2025 每秒23兆字节. 保留所有权利</p>
+      <p>作者邮箱：2309194142@qq.com · 网站作者QQ：2309194142</p>
+    </footer>
 
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuToggle = document.querySelector(".menu-toggle");
+        const navLinks = document.querySelector(".nav-links");
+
+        menuToggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          navLinks.classList.toggle("active");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".nav-container")) {
+            navLinks.classList.remove("active");
+          }
+        });
+
+        const topnav = document.getElementById("topnav");
+        window.addEventListener(
+          "scroll",
+          () => {
+            topnav.classList.toggle("scrolled", window.scrollY > 50);
+          },
+          { passive: true }
+        );
+
+        // 图片加载优化
+        const images = document.querySelectorAll(".fakeimg");
+        images.forEach((img) => {
+          const tempImg = new Image();
+          tempImg.src = getComputedStyle(img).backgroundImage.replace(
+            /url\(["']?(.*?)["']?\)/,
+            "$1"
+          );
+          tempImg.onload = () => (img.style.opacity = 1);
+        });
+      });
+    </script>
+  </body>
 </html>
