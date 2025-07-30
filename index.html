@@ -1,486 +1,541 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>O-5报告</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+    <title>小游戏</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       body {
-        background-color: #000;
-        color: #eeeeee;
-        font-family: "Noto Serif SC", serif;
-        line-height: 1.6;
-        padding: 20px;
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-      }
-
-      .grid-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(rgba(30, 30, 30, 0.2) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(30, 30, 30, 0.2) 1px, transparent 1px);
-        background-size: 30px 30px;
-        z-index: -1;
-      }
-
-      .particles {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        pointer-events: none;
-      }
-
-      .particle {
-        position: absolute;
-        background: rgba(80, 150, 255, 0.3);
-        border-radius: 50%;
-        opacity: 0.4;
-      }
-
-      .lab-equipment {
-        position: absolute;
-        opacity: 0.05;
-        z-index: -1;
-      }
-
-      .lab-equipment:nth-child(1) {
-        top: 10%;
-        left: 5%;
-        font-size: 100px;
-      }
-
-      .lab-equipment:nth-child(2) {
-        top: 20%;
-        right: 8%;
-        font-size: 80px;
-        transform: rotate(45deg);
-      }
-
-      .lab-equipment:nth-child(3) {
-        bottom: 15%;
-        left: 10%;
-        font-size: 120px;
-        transform: rotate(-15deg);
-      }
-
-      /* 主容器 */
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        background: rgba(15, 15, 20, 0.85);
-        border: 1px solid rgba(60, 60, 80, 0.5);
-        border-radius: 2px;
-        box-shadow: 0 0 20px rgba(0, 80, 200, 0.1);
-        padding: 30px;
-        position: relative;
-        z-index: 1;
-      }
-
-      /* 头部样式 */
-      .header {
-        text-align: center;
-        padding: 20px 0 30px;
-        border-bottom: 1px solid rgba(80, 120, 200, 0.3);
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2.5rem;
-        letter-spacing: 1px;
-        margin-bottom: 15px;
-        color: #de1e1e;
-        text-transform: uppercase;
-        font-weight: 700;
-      }
-
-      .header h2 {
-        font-size: 1.3rem;
-        color: #a0c0f0;
-        font-weight: 400;
-        letter-spacing: 0.5px;
-      }
-
-      .date {
-        position: absolute;
-        top: 25px;
-        right: 0;
-        font-size: 0.9rem;
-        color: #8899bb;
-        font-family: "Roboto Mono", monospace;
-      }
-
-      /* 实验信息表格 */
-      .experiment-info {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 25px 0;
-        font-family: "Roboto Mono", monospace;
-        font-size: 0.95rem;
-      }
-
-      .experiment-info th {
-        background: rgba(30, 60, 120, 0.3);
-        text-align: left;
-        padding: 10px 15px;
-        color: #a0c0f0;
-        border: 1px solid rgba(80, 100, 150, 0.4);
-        font-weight: 500;
-      }
-
-      .experiment-info td {
-        padding: 10px 15px;
-        border: 1px solid rgba(80, 100, 150, 0.4);
-        color: #d0d0e0;
-      }
-
-      /* 内容部分 */
-      .section {
-        margin: 30px 0;
-      }
-
-      .section-title {
-        font-size: 1.5rem;
-        color: #70a0ff;
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(80, 120, 200, 0.3);
-        position: relative;
-      }
-
-      .section-title:after {
-        content: "";
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        width: 100px;
-        height: 2px;
-        background: linear-gradient(90deg, #70a0ff, transparent);
-      }
-
-      .content {
-        background: rgba(20, 25, 40, 0.4);
-        padding: 20px;
-        border-left: 3px solid #70a0ff;
-        margin: 15px 0;
-        font-size: 1.05rem;
-        line-height: 1.7;
-      }
-
-      .content p {
-        margin-bottom: 15px;
-      }
-
-      /* 图表区域 */
-      .chart-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 25px;
-        margin: 25px 0;
-      }
-
-      .chart {
-        flex: 1;
-        min-width: 300px;
-        height: 600px;
-        background: rgba(15, 20, 30, 0.7);
-        border: 1px solid rgba(70, 100, 180, 0.3);
-        padding: 20px;
-        border-radius: 2px;
-      }
-
-      .chart-title {
-        text-align: center;
-        margin-bottom: 15px;
-        color: #a0c0f0;
-        font-size: 1.1rem;
-      }
-
-      .chart-placeholder {
-        height: 500px;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: rgba(10, 15, 25, 0.5);
-        border: 1px dashed rgba(80, 120, 200, 0.3);
-        color: #8899aa;
-        font-family: "Roboto Mono", monospace;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        padding: 20px;
       }
 
-      /* 结论部分 */
-      .conclusion {
-        background: rgba(20, 40, 70, 0.3);
-        padding: 25px;
-        border-left: 4px solid #70a0ff;
-        margin: 30px 0;
+      .game-container {
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+        color: white;
       }
 
-      .conclusion h3 {
-        color: #70a0ff;
-        margin-bottom: 15px;
-        font-size: 1.3rem;
-      }
-
-      .conclusion p {
-        line-height: 1.8;
-      }
-
-      /* 页脚 */
-      .footer {
+      header {
         text-align: center;
-        padding: 30px 0 15px;
-        color: #778899;
-        font-size: 0.9rem;
-        border-top: 1px solid rgba(80, 120, 200, 0.2);
-        margin-top: 20px;
-        font-family: "Roboto Mono", monospace;
+        margin-bottom: 20px;
       }
 
-      /* 响应式设计 */
-      @media (max-width: 768px) {
-        .container {
-          padding: 15px;
+      h1 {
+        font-size: 2.8rem;
+        color: #ffde59;
+        text-shadow: 0 0 10px rgba(255, 222, 89, 0.7);
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+
+      .score-container,
+      .high-score-container {
+        font-size: 1.4rem;
+        font-weight: bold;
+      }
+
+      .score-value,
+      .high-score-value {
+        color: #4caf50;
+        font-size: 1.8rem;
+        display: inline-block;
+        min-width: 50px;
+      }
+
+      .game-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      canvas {
+        background-color: #111;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+        display: block;
+      }
+
+      .controls {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        background: linear-gradient(to right, #ffde59, #ff8c00);
+        color: #222;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .btn:disabled {
+        background: #777;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .instructions {
+        margin-top: 25px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .instructions h2 {
+        color: #ffde59;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .instructions ul {
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin-bottom: 8px;
+      }
+
+      .game-over {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        display: none;
+        z-index: 10;
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        border: 2px solid #ff3333;
+      }
+
+      .game-over h2 {
+        color: #ff3333;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      .final-score {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+      }
+
+      @media (max-width: 600px) {
+        .game-container {
+          padding: 10px;
         }
 
-        .header h1 {
-          font-size: 1.8rem;
+        h1 {
+          font-size: 2rem;
         }
 
-        .header h2 {
-          font-size: 1.1rem;
+        .game-info {
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
         }
 
-        .date {
-          position: static;
-          display: block;
-          margin-top: 10px;
-        }
-
-        .chart-container {
+        .controls {
           flex-direction: column;
         }
       }
     </style>
   </head>
   <body>
-    <div class="grid-overlay"></div>
-    <div class="particles" id="particles"></div>
-    <div class="lab-equipment">
-      <i class="fas fa-microscope"></i>
-    </div>
-    <div class="lab-equipment">
-      <i class="fas fa-flask"></i>
-    </div>
-    <div class="lab-equipment">
-      <i class="fas fa-atom"></i>
-    </div>
+    <div class="game-container">
+      <header>
+        <h1>垃圾小游戏</h1>
+      </header>
 
-    <div class="container">
-      <div class="header">
-        <h1>受试者档案-d-9408</h1>
-        <h2>个体特质与潜力分析报告</h2>
-        <div class="date">2025年7月27日</div>
-      </div>
-
-      <table class="experiment-info">
-        <tr>
-          <th>实验编号</th>
-          <td>QTE-2025-7-27</td>
-          <th>生理指标</th>
-          <td>
-            身高：1.79 米 (符合东亚男性青少年该年龄段生长曲线 85th-90th
-            百分位)<br />
-            体重：60.0 公斤 (BMI ≈ 18.7，处于健康范围)
-          </td>
-        </tr>
-        <tr>
-          <th>实验项目</th>
-          <td>梁振霆 (Liang Zhen ting)</td>
-          <th>年龄</th>
-          <td>15.2 岁 (截至评估日期 2025 年 7 月 27 日)</td>
-        </tr>
-        <tr>
-          <th>教育背景</th>
-          <td>
-            当前阶段：高中二年级 (G2)<br />
-            现就读机构：广西壮族自治区崇左市附属中学 (Guangxi Zhuang Autonomous
-            Region Chongzuo Affiliated High School)<br />
-            初中教育机构：广西大学附属中学崇左分部校区 (Guangxi University
-            Affiliated Middle School, Chongzuo Branch Campus)
-          </td>
-          <th>核心能力与特质观测 (基于结构化访谈、行为观察及学业记录)</th>
-          <td>认知能力与学业表现 (Cognitive Ability & Academic Performance)</td>
-        </tr>
-      </table>
-
-      <div class="section">
-        <div class="section-title">学业成就 (Academic Achievement)</div>
-        <div class="content">
-          <p>
-            观测数据显示受试者学业成绩持续位于同年级前列 (Top 10-15%)
-            其优势领域集中在数理逻辑推理 与抽象概念理解)，
-            解题过程展现出系统性和高效性学习效能:表现出显著的信息处理速度
-            与知识整合能力具备较强的自主学习策略 和目标管理意识
-          </p>
+      <div class="game-info">
+        <div class="score-container">
+          当前分数: <span id="score" class="score-value">0</span>
+        </div>
+        <div class="high-score-container">
+          最高分: <span id="high-score" class="high-score-value">0</span>
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">初步分析结论</div>
-        <div class="content">
-          <p>
-            受试者梁振霆个体档案显示其为一名在认知能力、
-            神经运动协调性及非认知技能多个维度均表现出显著优势的青少年<br />其核心特征包括：
-            良好的空间感知能力 (Spatial
-            Awareness):在动态球场环境中能准确判断自身与物体（球、队友、对手）的相对位置及运动轨迹
-            基础运动技能娴熟 (Proficient Foundational Motor
-            Skills):控球、传球、投篮等基本技术动作掌握度较高
-            一定的身体对抗适应性 (Physical Contact Adaptation):<br />能在符合规则的对抗条件下保持技术动作稳定性
-          </p>
-          <ol>
-            <li>卓越的认知处理效率与学术潜力</li>
-            <li>
-              高度发展的神经运动协调性、快速反应能力及战术思维能力，
-              在电子竞技与体育运动领域有明确体现
-            </li>
-            <li>
-              超越同龄平均水平的自律性、时间管理能力及心理韧性，构成高效能行为模式的基础
-            </li>
-            <li>
-              社会适应性良好，具备团队协作基础，领导力潜质需进一步观察评估
-            </li>
-          </ol>
+      <div class="game-area">
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+        <div class="controls">
+          <button id="startBtn" class="btn">开始游戏</button>
+          <button id="pauseBtn" class="btn" disabled>暂停</button>
+          <button id="restartBtn" class="btn">重新开始</button>
+        </div>
+
+        <div class="instructions"
+          <h2>游戏说明</h2>
+          <ul>
+            <li>使用 <strong>↑ ← ↓ →</strong> 方向键控制移动</li>
+            <li>吃到食物（红色方块）后，蛇身会变长，分数+1</li>
+            <li>撞到墙壁或自己的身体，游戏结束</li>
+            <li>尽可能吃到更多的食物，挑战最高分</li>
+          </ul>
+          <hr>
+         <div style="text-align: center;" <a href="https://imgloc.com/image/2pLMq"><img 
+            src="https://i.imgs.ovh/2025/07/30/2pLMq.jpeg"
+             alt="2pLMq.jpeg" border="0"
+              height="270"
+                width="220"></a>
+                <p><strong>联系作者汇报bug ↑ </strong></p>
+            <p>© 2025 每秒23兆字节. 保留所有权利</p>
+        <p>作者邮箱：2309194142@qq.com · 网站作者QQ：2309194142</p></div>
         </div>
       </div>
-
-      <div class="section">
-        <div class="section-title">项目图片</div>
-        <div class="chart-container">
-          <div class="chart">
-              <img
-                src="https://i.imgs.ovh/2025/07/27/nUTUO.jpeg"
-                alt="nUTUO.jpeg"
-                border="0"
-                height="550"
-                width="700"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">非认知技能评估</div>
-        <div class="content">
-          <p>
-            自律性与时间管理 (Self-Discipline & Time
-            Management):观测到受试者能有效平衡高强度学业任务 (High Academic
-            Load) 与多元兴趣活动 (Diverse Interest-Driven
-            Activities)，显示出极强的自我调控能力 (Self-Regulation Capacity)
-            和时间规划执行力 (Time Allocation Execution)
-          </p>
-        </div>
-      </div>
-
-      <div class="conclusion">
-        <h3>体育运动表现 (Sports Performance)</h3>
-        <p>
-          篮球
-          (Basketball):良好的空间感知与动态适应能力:在高速移动及对抗环境中能准确判断位置关系及运动轨迹。
-          基础运动技能娴熟控球、传球、投篮等基本技术动作掌握度较高
-          一定的身体对抗适应性:能在符合规则的对抗条件下保持技术动作稳定性
-        </p>
-        <p>
-          台球 (Billiards)新增观测项: <br />
-          卓越的精密角度计算与轨迹预测能力:展现出对几何力学原理的直观应用能力。<br />
-          高度发展的静态手部稳定控制与微操作能力 (Static Hand Stability & Fine
-          Motor Control):<br />出杆动作稳定流畅，力度控制精确。<br />
-          战略性布局思维与长线规划能力:具备规划多步击球策略，预测球局发展的能力。
-          优秀的动觉预测与空间建模能力:能精准模拟球体碰撞后的运动状态
-        </p>
-      </div>
-
-      <div class="footer">
-        <p>
-          报告属性:内部观察评估 | 项目等级：Euclid | 报告生成时间：2025 年 7 月
-          27 日 14:30:25
-        </p>
-        <p>© 2025 每秒23兆字节. 保留所有权利</p>
-        <p>作者邮箱：2309194142@qq.com · 网站作者QQ：2309194142</p>
       </div>
     </div>
+
+    <div id="gameOver" class="game-over">
+      <h2>菜👎</h2>
+      <div class="final-score">最终得分: <span id="finalScore">0</span></div>
+      <button id="playAgainBtn" class="btn">再玩一次</button>
+    </div>
+
 
     <script>
-      // 创建动态粒子背景
-      function createParticles() {
-        const container = document.getElementById("particles");
-        const particleCount = 50;
+      // 获取Canvas元素和上下文
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
 
-        for (let i = 0; i < particleCount; i++) {
-          const particle = document.createElement("div");
-          particle.classList.add("particle");
+      // 游戏变量
+      const gridSize = 20; // 网格大小
+      const tileCount = canvas.width / gridSize; // 每行/列格子数
+      let snake = [];
+      let food = {};
+      let dx = gridSize; // 蛇的初始水平移动速度
+      let dy = 0; // 蛇的初始垂直移动速度
+      let score = 0;
+      let highScore = localStorage.getItem("snakeHighScore") || 0;
+      let gameRunning = false;
+      let gameLoop;
 
-          // 随机粒子属性
-          const size = Math.random() * 4 + 1;
-          const posX = Math.random() * 100;
-          const posY = Math.random() * 100;
-          const animationDuration = Math.random() * 20 + 10;
-          const animationDelay = Math.random() * 5;
+      // DOM元素
+      const scoreElement = document.getElementById("score");
+      const highScoreElement = document.getElementById("high-score");
+      const finalScoreElement = document.getElementById("finalScore");
+      const startBtn = document.getElementById("startBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const restartBtn = document.getElementById("restartBtn");
+      const playAgainBtn = document.getElementById("playAgainBtn");
+      const gameOverElement = document.getElementById("gameOver");
 
-          particle.style.width = `${size}px`;
-          particle.style.height = `${size}px`;
-          particle.style.left = `${posX}%`;
-          particle.style.top = `${posY}%`;
-          particle.style.animation = `float ${animationDuration}s ease-in-out ${animationDelay}s infinite`;
+      // 初始化游戏
+      function initGame() {
+        // 初始化蛇
+        snake = [
+          { x: 10 * gridSize, y: 10 * gridSize }, // 蛇头
+          { x: 9 * gridSize, y: 10 * gridSize }, // 蛇身
+          { x: 8 * gridSize, y: 10 * gridSize }, // 蛇身
+        ];
 
-          container.appendChild(particle);
+        // 生成食物
+        generateFood();
+
+        // 重置移动方向
+        dx = gridSize;
+        dy = 0;
+
+        // 重置分数
+        score = 0;
+        updateScore();
+
+        // 更新最高分显示
+        highScoreElement.textContent = highScore;
+
+        // 隐藏游戏结束界面
+        gameOverElement.style.display = "none";
+      }
+
+      // 生成食物
+      function generateFood() {
+        // 确保食物不会出现在蛇身上
+        let foodOnSnake;
+        do {
+          foodOnSnake = false;
+          food = {
+            x: Math.floor(Math.random() * (tileCount - 2) + 1) * gridSize,
+            y: Math.floor(Math.random() * (tileCount - 2) + 1) * gridSize,
+          };
+
+          // 检查食物是否出现在蛇身上
+          for (let segment of snake) {
+            if (segment.x === food.x && segment.y === food.y) {
+              foodOnSnake = true;
+              break;
+            }
+          }
+        } while (foodOnSnake);
+      }
+
+      // 绘制游戏
+      function drawGame() {
+        // 清除画布
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制墙体
+        ctx.fillStyle = "#444";
+        ctx.fillRect(0, 0, canvas.width, gridSize); // 上墙
+        ctx.fillRect(0, 0, gridSize, canvas.height); // 左墙
+        ctx.fillRect(canvas.width - gridSize, 0, gridSize, canvas.height); // 右墙
+        ctx.fillRect(0, canvas.height - gridSize, canvas.width, gridSize); // 下墙
+
+        // 绘制蛇
+        snake.forEach((segment, index) => {
+          if (index === 0) {
+            // 蛇头
+            ctx.fillStyle = "#4caf50";
+          } else {
+            // 蛇身
+            const greenValue = 150 - Math.min(15 * index, 100);
+            ctx.fillStyle = `rgb(50, ${greenValue}, 50)`;
+          }
+          ctx.fillRect(segment.x, segment.y, gridSize - 1, gridSize - 1);
+
+          // 蛇头眼睛
+          if (index === 0) {
+            ctx.fillStyle = "#000";
+            // 根据方向绘制眼睛位置
+            if (dx > 0) {
+              // 向右
+              ctx.fillRect(segment.x + 13, segment.y + 5, 3, 3);
+              ctx.fillRect(segment.x + 13, segment.y + 12, 3, 3);
+            } else if (dx < 0) {
+              // 向左
+              ctx.fillRect(segment.x + 4, segment.y + 5, 3, 3);
+              ctx.fillRect(segment.x + 4, segment.y + 12, 3, 3);
+            } else if (dy > 0) {
+              // 向下
+              ctx.fillRect(segment.x + 5, segment.y + 13, 3, 3);
+              ctx.fillRect(segment.x + 12, segment.y + 13, 3, 3);
+            } else {
+              // 向上
+              ctx.fillRect(segment.x + 5, segment.y + 4, 3, 3);
+              ctx.fillRect(segment.x + 12, segment.y + 4, 3, 3);
+            }
+          }
+        });
+
+        // 绘制食物
+        ctx.fillStyle = "#ff5252";
+        ctx.beginPath();
+        ctx.arc(
+          food.x + gridSize / 2,
+          food.y + gridSize / 2,
+          gridSize / 2 - 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+
+      // 移动蛇
+      function moveSnake() {
+        // 创建新的蛇头
+        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+        // 检查是否撞墙
+        if (
+          head.x < gridSize ||
+          head.x >= canvas.width - gridSize ||
+          head.y < gridSize ||
+          head.y >= canvas.height - gridSize
+        ) {
+          gameOver();
+          return;
+        }
+
+        // 检查是否撞到自己
+        for (let i = 0; i < snake.length; i++) {
+          if (head.x === snake[i].x && head.y === snake[i].y) {
+            gameOver();
+            return;
+          }
+        }
+
+        // 在开头添加新的蛇头
+        snake.unshift(head);
+
+        // 检查是否吃到食物
+        if (head.x === food.x && head.y === food.y) {
+          // 吃到食物，增加分数
+          score++;
+          updateScore();
+
+          // 生成新食物
+          generateFood();
+        } else {
+          // 没吃到食物，移除蛇尾
+          snake.pop();
         }
       }
 
-      // 添加动态漂浮动画
-      const style = document.createElement("style");
-      style.innerHTML = `
-            @keyframes float {
-                0%, 100% { transform: translate(0, 0); }
-                25% { transform: translate(${Math.random() * 20 - 10}px, ${
-        Math.random() * 20 - 10
-      }px); }
-                50% { transform: translate(${Math.random() * 30 - 15}px, ${
-        Math.random() * 30 - 15
-      }px); }
-                75% { transform: translate(${Math.random() * 20 - 10}px, ${
-        Math.random() * 20 - 10
-      }px); }
-            }
-        `;
-      document.head.appendChild(style);
+      // 更新分数显示
+      function updateScore() {
+        scoreElement.textContent = score;
 
-      // 初始化页面
-      window.onload = function () {
-        createParticles();
-      };
+        // 更新最高分
+        if (score > highScore) {
+          highScore = score;
+          highScoreElement.textContent = highScore;
+          localStorage.setItem("snakeHighScore", highScore);
+        }
+      }
+
+      // 游戏主循环
+      function gameStep() {
+        moveSnake();
+        drawGame();
+      }
+
+      // 开始游戏
+      function startGame() {
+        if (!gameRunning) {
+          gameRunning = true;
+          gameLoop = setInterval(gameStep, 150);
+          startBtn.disabled = true;
+          pauseBtn.disabled = false;
+        }
+      }
+
+      // 暂停游戏
+      function pauseGame() {
+        if (gameRunning) {
+          clearInterval(gameLoop);
+          gameRunning = false;
+          pauseBtn.textContent = "继续";
+        } else {
+          gameRunning = true;
+          gameLoop = setInterval(gameStep, 150);
+          pauseBtn.textContent = "暂停";
+        }
+      }
+
+      // 游戏结束
+      function gameOver() {
+        clearInterval(gameLoop);
+        gameRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        pauseBtn.textContent = "暂停";
+
+        // 显示最终得分
+        finalScoreElement.textContent = score;
+        gameOverElement.style.display = "block";
+      }
+
+      // 键盘控制
+      document.addEventListener("keydown", (e) => {
+        // 防止方向键滚动页面
+        if ([37, 38, 39, 40].includes(e.keyCode)) {
+          e.preventDefault();
+        }
+
+        // 方向键控制
+        switch (e.keyCode) {
+          case 37: // 左箭头
+            if (dx === 0) {
+              // 防止180度转弯
+              dx = -gridSize;
+              dy = 0;
+            }
+            break;
+          case 38: // 上箭头
+            if (dy === 0) {
+              dx = 0;
+              dy = -gridSize;
+            }
+            break;
+          case 39: // 右箭头
+            if (dx === 0) {
+              dx = gridSize;
+              dy = 0;
+            }
+            break;
+          case 40: // 下箭头
+            if (dy === 0) {
+              dx = 0;
+              dy = gridSize;
+            }
+            break;
+          case 32: // 空格键
+            if (gameRunning) {
+              pauseGame();
+            } else {
+              startGame();
+            }
+            break;
+        }
+      });
+
+      // 按钮事件监听
+      startBtn.addEventListener("click", startGame);
+      pauseBtn.addEventListener("click", pauseGame);
+      restartBtn.addEventListener("click", () => {
+        clearInterval(gameLoop);
+        initGame();
+        gameRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        pauseBtn.textContent = "暂停";
+        drawGame();
+      });
+      playAgainBtn.addEventListener("click", () => {
+        initGame();
+        drawGame();
+      });
+
+      // 初始化游戏
+      initGame();
+      drawGame();
     </script>
   </body>
 </html>
