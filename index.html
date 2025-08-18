@@ -3,888 +3,1155 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>网页小游戏</title>
+    <title>23MB | 技术专家与创意工作者</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --primary: #2c3e50;
+        --secondary: #3498db;
+        --accent: #e74c3c;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --transition: all 0.4s ease;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+      }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        touch-action: manipulation;
       }
 
       body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-        padding: 15px;
-        overflow: auto;
+        font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--dark);
+        background-color: var(--light);
+        overflow-x: hidden;
       }
 
-      .game-container {
-        background-color: rgba(0, 0, 0, 0.9);
-        border-radius: 15px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-        overflow: visible;
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+      }
+
+      /* 导航栏 */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        max-width: 850px;
-        padding: 20px;
-        color: white;
-        position: relative;
-        margin: 20px 0;
-      }
-
-      header {
-        text-align: center;
-        margin-bottom: 15px;
-        padding-top: 10px;
-      }
-
-      h1 {
-        font-size: 2.8rem;
-        color: #20d2d8;
-        text-shadow: 0 0 15px rgba(0, 199, 244, 0.8);
-        margin-bottom: 5px;
-        letter-spacing: 1.5px;
-      }
-
-      .game-info {
+        padding: 1.2rem 5%;
         display: flex;
         justify-content: space-between;
-        margin-bottom: 15px;
-        padding: 12px 15px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        font-size: 1.1rem;
-      }
-
-      .score-container,
-      .high-score-container {
-        font-weight: bold;
-        display: flex;
         align-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: var(--shadow);
+        z-index: 1000;
+        transition: var(--transition);
       }
 
-      .score-value,
-      .high-score-value {
-        color: #14ba1a;
+      .navbar.scrolled {
+        padding: 0.8rem 5%;
+      }
+
+      .logo {
         font-size: 1.8rem;
-        display: inline-block;
-        min-width: 50px;
-        margin-left: 8px;
-        text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        font-weight: 900;
+        color: var(--primary);
+        text-decoration: none;
+        letter-spacing: -1px;
       }
 
-      .game-area {
+      .logo span {
+        color: var(--secondary);
+      }
+
+      .nav-links {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        gap: 2rem;
       }
 
-      #gameCanvas {
-        background-color: #0d0d0d;
-        border-radius: 8px;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-        display: block;
-        max-width: 100%;
+      .nav-links a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        transition: var(--transition);
       }
 
-      .controls {
-        margin-top: 20px;
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--secondary);
+        transition: var(--transition);
       }
 
-      .btn {
-        padding: 13px 28px;
-        font-size: 1.15rem;
-        font-weight: bold;
-        border: none;
-        border-radius: 50px;
+      .nav-links a:hover {
+        color: var(--secondary);
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .menu-toggle {
+        display: none;
         cursor: pointer;
-        background: linear-gradient(to right, #fbd84a, #ff8c00);
-        color: #222;
-        transition: all 0.2s ease;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        font-size: 1.5rem;
+      }
+
+      /* 头部区域 */
+      .hero {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 0 10%;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 249, 250, 0.95) 100%
+          ),
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%23e9ecef" stroke-width="0.5"/></svg>');
+        background-size: cover;
         position: relative;
         overflow: hidden;
       }
 
-      .btn::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+      .hero-content {
+        max-width: 850px;
+        z-index: 2;
       }
 
-      .btn:hover::after {
-        transform: translateX(0);
+      .hero h1 {
+        font-size: 4.8rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s forwards 0.3s;
+        font-weight: 900;
+        letter-spacing: -2px;
+        text-transform: uppercase;
       }
 
-      .btn:active {
-        transform: translateY(3px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      .hero .title-line {
+        display: block;
+        margin-bottom: 0.5rem;
       }
 
-      .btn:disabled {
-        background: #666;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
+      .hero .title-line:nth-child(1) {
+        font-size: 5.2rem;
+        color: var(--primary);
       }
 
-      .instructions {
-        margin-top: 25px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        width: 100%;
+      .hero .title-line:nth-child(2) {
+        font-size: 4rem;
+        color: var(--secondary);
+        margin-left: 1.5rem;
       }
 
-      .instructions h2 {
-        color: #ffde59;
-        margin-bottom: 10px;
+      .hero .title-line:nth-child(3) {
+        font-size: 3.5rem;
+        color: var(--accent);
+        margin-left: 3rem;
+      }
+
+      .hero h2 {
+        font-size: 1.8rem;
+        font-weight: 400;
+        color: var(--secondary);
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s forwards 0.5s;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: var(--gray);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s forwards 0.7s;
+        max-width: 600px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        background: var(--secondary);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius);
+        font-weight: 500;
+        transition: var(--transition);
+        border: 2px solid var(--secondary);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s forwards 0.9s;
+      }
+
+      .btn:hover {
+        background: white;
+        color: var(--secondary);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--secondary);
+        margin-left: 1rem;
+      }
+
+      .btn-outline:hover {
+        background: var(--secondary);
+        color: white;
+      }
+
+      /* 内容区域 */
+      section {
+        padding: 6rem 10%;
+      }
+
+      .section-title {
         text-align: center;
-        font-size: 1.4rem;
-      }
-
-      .instructions ul {
-        padding-left: 20px;
-      }
-
-      .instructions li {
-        margin-bottom: 8px;
-      }
-
-      .game-over {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.95);
-        padding: 35px 30px;
-        border-radius: 15px;
-        text-align: center;
-        display: none;
-        z-index: 100;
-        box-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
-        border: 3px solid #ff3333;
-        width: 90%;
-        max-width: 500px;
-      }
-
-      .game-over h2 {
-        color: #ff3333;
-        font-size: 2.6rem;
-        margin-bottom: 25px;
-        text-shadow: 0 0 15px rgba(255, 51, 51, 0.7);
-      }
-
-      .final-score {
-        font-size: 2rem;
-        margin-bottom: 30px;
-        color: #ffde59;
-      }
-
-      /* 手机方向控制 */
-      .mobile-controls {
-        display: none;
-        margin-top: 25px;
-        width: 100%;
-        max-width: 320px;
+        margin-bottom: 4rem;
         position: relative;
       }
 
-      .control-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
-        gap: 10px;
-        width: 100%;
-        aspect-ratio: 1/1;
+      .section-title h2 {
+        font-size: 2.5rem;
+        color: var(--primary);
+        display: inline-block;
+        padding-bottom: 0.5rem;
       }
 
-      .control-btn {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
+      .section-title h2::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--secondary);
+        border-radius: 2px;
+      }
+
+      /* 关于区域 */
+      .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      .about-text h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .about-text p {
+        margin-bottom: 1.5rem;
+        color: var(--gray);
+      }
+
+      .identity-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+
+      .badge {
+        background: #e9ecef;
+        padding: 0.5rem 1.2rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .badge i {
+        color: var(--secondary);
+      }
+
+      .skills {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .skill-item h4 {
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .skill-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .skill-progress {
+        height: 100%;
+        background: var(--secondary);
+        border-radius: 4px;
+        position: relative;
+        width: 0;
+        transition: width 1.5s ease-in-out;
+      }
+
+      .about-image {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transform: rotate(-3deg);
+        transition: var(--transition);
+        height: 500px;
+        background: linear-gradient(45deg, #e0e0e0, #f5f5f5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: var(--gray);
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .about-image:hover {
+        transform: rotate(0);
+      }
+
+      .camera-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+      }
+
+      /* 作品集 */
+      .portfolio {
+        background: #f1f3f5;
+      }
+
+      .portfolio-filters {
         display: flex;
         justify-content: center;
-        align-items: center;
-        font-size: 32px;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1.5rem;
+        background: white;
+        border: none;
+        border-radius: 30px;
         cursor: pointer;
-        user-select: none;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        transition: all 0.1s ease;
-        border: 2px solid rgba(255, 222, 89, 0.3);
+        font-weight: 500;
+        transition: var(--transition);
+        box-shadow: var(--shadow);
       }
 
-      .control-btn:active {
-        background: rgba(255, 222, 89, 0.4);
-        transform: scale(0.95);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: var(--secondary);
+        color: white;
       }
 
-      #upBtn {
-        grid-column: 2;
-        grid-row: 1;
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
       }
 
-      #leftBtn {
-        grid-column: 1;
-        grid-row: 2;
+      .portfolio-item {
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        opacity: 0;
+        transform: translateY(30px);
+        display: none;
       }
 
-      #downBtn {
-        grid-column: 2;
-        grid-row: 3;
+      .portfolio-item.show {
+        opacity: 1;
+        transform: translateY(0);
+        display: block;
+        animation: fadeIn 0.5s ease;
       }
 
-      #rightBtn {
-        grid-column: 3;
-        grid-row: 2;
+      .portfolio-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
       }
 
-      /* 媒体查询 - 移动设备适配 */
+      .portfolio-img {
+        height: 250px;
+        overflow: hidden;
+      }
+
+      .portfolio-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+      }
+
+      .portfolio-item:hover .portfolio-img img {
+        transform: scale(1.1);
+      }
+
+      .portfolio-info {
+        padding: 1.5rem;
+      }
+
+      .portfolio-info h3 {
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .portfolio-info p {
+        color: var(--gray);
+        margin-bottom: 1rem;
+      }
+
+      .portfolio-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .tag {
+        background: #e9ecef;
+        color: var(--gray);
+        padding: 0.3rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.85rem;
+      }
+
+      /* 联系区域 */
+      .contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--secondary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .contact-details h4 {
+        margin-bottom: 0.3rem;
+        color: var(--primary);
+      }
+
+      .contact-details p,
+      .contact-details a {
+        color: var(--gray);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .contact-details a:hover {
+        color: var(--secondary);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: var(--primary);
+        transition: var(--transition);
+        text-decoration: none; /* 修复图标下划线问题 */
+      }
+
+      .social-links a:hover {
+        background: var(--secondary);
+        color: white;
+        transform: translateY(-5px);
+      }
+
+      .contact-form .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: var(--radius);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .contact-form input:focus,
+      .contact-form textarea:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+      }
+
+      .contact-form textarea {
+        height: 150px;
+        resize: vertical;
+      }
+
+      /* 页脚 */
+      footer {
+        background: var(--primary);
+        color: white;
+        padding: 3rem 10%;
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .footer-logo {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo span {
+        color: var(--secondary);
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .footer-links a:hover {
+        color: white;
+      }
+
+      .copyright {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+        margin-top: 2rem;
+      }
+
+      /* 修复页脚图标居中问题 */
+      .footer-social {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .footer-social a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transition: var(--transition);
+        text-decoration: none; /* 修复图标下划线问题 */
+      }
+
+      .footer-social a:hover {
+        background: var(--secondary);
+        transform: translateY(-3px);
+      }
+
+      /* 动画 */
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 992px) {
+        .about-content,
+        .contact-container {
+          grid-template-columns: 1fr;
+        }
+
+        .about-image {
+          max-width: 500px;
+          margin: 0 auto;
+        }
+      }
+
       @media (max-width: 768px) {
-        body {
-          padding: 10px;
-          align-items: flex-start;
-        }
-
-        .game-container {
-          padding: 15px;
-          border-radius: 12px;
-          margin: 10px 0;
-        }
-
-        h1 {
-          font-size: 2.3rem;
-          margin-bottom: 3px;
-        }
-
-        .game-info {
-          flex-direction: column;
-          gap: 12px;
-          align-items: center;
-          padding: 10px;
-          margin-bottom: 12px;
-        }
-
-        .controls {
-          margin-top: 15px;
-          margin-bottom: 5px;
-          gap: 12px;
-          width: 100%;
-        }
-
-        .btn {
-          padding: 12px 20px;
-          font-size: 1.1rem;
-          flex: 1;
-          min-width: 45%;
-        }
-
-        #gameCanvas {
-          width: 100%;
-          height: 50vh;
-          max-height: 450px;
-        }
-
-        .mobile-controls {
+        .menu-toggle {
           display: block;
         }
 
-        .instructions {
-          margin-top: 20px;
-          padding: 12px;
-          font-size: 0.9rem;
+        .nav-links {
+          position: fixed;
+          top: 70px;
+          right: -100%;
+          flex-direction: column;
+          background: white;
+          width: 250px;
+          height: calc(100vh - 70px);
+          padding: 2rem;
+          box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+          transition: var(--transition);
         }
 
-        .instructions h2 {
-          font-size: 1.3rem;
+        .nav-links.active {
+          right: 0;
         }
 
-        .instructions ul {
-          padding-left: 15px;
+        .hero h1 {
+          font-size: 3rem;
         }
-      }
 
-      @media (max-width: 480px) {
-        h1 {
+        .hero .title-line:nth-child(1) {
+          font-size: 3.2rem;
+        }
+
+        .hero .title-line:nth-child(2) {
+          font-size: 2.5rem;
+        }
+
+        .hero .title-line:nth-child(3) {
           font-size: 2rem;
         }
 
-        .score-container,
-        .high-score-container {
-          font-size: 1.05rem;
+        .section-title h2 {
+          font-size: 2rem;
         }
 
-        .score-value,
-        .high-score-value {
-          font-size: 1.6rem;
+        .portfolio-grid {
+          grid-template-columns: 1fr;
         }
 
-        .btn {
-          padding: 10px 15px;
-          font-size: 1rem;
-          min-width: 40%;
+        .btn-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
         }
 
-        .control-btn {
-          font-size: 28px;
+        .btn-outline {
+          margin-left: 0;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .hero {
+          padding: 0 5%;
         }
 
-        .game-over {
-          padding: 25px 20px;
+        section {
+          padding: 4rem 5%;
         }
 
-        .game-over h2 {
+        .skills {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
           font-size: 2.2rem;
         }
-
-        .final-score {
-          font-size: 1.8rem;
-        }
-
-        #gameCanvas {
-          height: 45vh;
-        }
-      }
-
-      .performance-hint {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 200, 0, 0.7);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 0.8rem;
-        display: none;
-        z-index: 200;
-      }
-
-      .game-stats {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 15px;
-        width: 100%;
-        font-size: 0.9rem;
-      }
-
-      .game-stats div {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 8px 15px;
-        border-radius: 20px;
-        text-align: center;
       }
     </style>
   </head>
   <body>
-    <div class="performance-hint" id="perfHint">高性能模式</div>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+      <a href="#" class="logo">23Megabytes</a>
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <a href="#home">首页</a>
+        <a href="#about">关于</a>
+        <a href="#portfolio">作品</a>
+        <a href="#contact">联系</a>
+      </div>
+    </nav>
 
-    <div class="game-container">
-      <header>
-        <h1>Death Game</h1>
-        <p>享受游戏，热爱生活，不为技术，娱乐至上！</p>
-      </header>
-
-      <div class="game-info">
-        <div class="score-container">
-          分数: <span id="score" class="score-value">0</span>
-        </div>
-        <div class="high-score-container">
-          最高分: <span id="high-score" class="high-score-value">0</span>
+    <!-- 头部区域 -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <h1>
+          <span class="title-line">TECHNOLOGY & CREATIVITY</span>
+          <span class="title-line">DESIGNED TO INSPIRE</span>
+          <span class="title-line">DIGITAL SOLUTIONS</span>
+        </h1>
+        <h2>电脑 & 前端开发 & 摄影</h2>
+        <p>
+          从电脑硬件组装到前端开发，再到摄影...
+        </p>
+        <div class="btn-container">
+          <a href="#portfolio" class="btn">查看作品</a>
+          <a href="#contact" class="btn btn-outline">联系我</a>
         </div>
       </div>
+    </section>
 
-      <div class="game-area">
-        <canvas id="gameCanvas"></canvas>
+    <!-- 关于区域 -->
+    <section class="about" id="about">
+      <div class="section-title">
+        <h2>关于我</h2>
+      </div>
+      <div class="about-content">
+        <div class="about-text">
+          <h3>一名普通的学生</h3>
+          <p>
+            略懂硬件,能徒手拆机箱,辩硅脂优劣如数家珍,HTML/CSS刚出新手村，
+            JS还卡在青铜段位，精通给朋友写奸商防坑指南,
+            擅长用二手配件给电脑续命,拍出来的照片就像史一样
+          </p>
 
-        <div class="mobile-controls">
-          <div class="control-grid">
-            <div class="control-btn" id="upBtn">↑</div>
-            <div class="control-btn" id="leftBtn">←</div>
-            <div class="control-btn" id="downBtn">↓</div>
-            <div class="control-btn" id="rightBtn">→</div>
+          <div class="identity-badges">
+            <div class="badge">
+              <i class="fas fa-tools"></i>
+              <span>电脑硬件</span>
+            </div>
+            <div class="badge">
+              <i class="fas fa-code"></i>
+              <span>前端开发</span>
+            </div>
+            <div class="badge">
+              <i class="fas fa-camera"></i>
+              <span>摄影</span>
+            </div>
+          </div>
+
+          <p>
+            对电脑硬件有基础了解，熟悉装机配置，
+            能帮朋友避坑选购配件，擅长性价比搭配
+            前端开发正在学习中，目前掌握HTML/CSS，能独立完成响应式页面布局和样式设计，
+            JavaScript基础部分已掌握，仍在深入实践。  
+            摄影3年，常用佳能m50搭配定焦镜头扫街，  
+            也欢迎交流硬件配置优化或摄影技巧
+          </p>
+
+          <div class="skills">
+            <div class="skill-item">
+              <h4>电脑硬件</h4>
+              <div class="skill-bar">
+                <div class="skill-progress" data-width="85"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <h4>前端开发</h4>
+              <div class="skill-bar">
+                <div class="skill-progress" data-width="35"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <h4>摄影</h4>
+              <div class="skill-bar">
+                <div class="skill-progress" data-width="60"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <h4>响应式设计</h4>
+              <div class="skill-bar">
+                <div class="skill-progress" data-width="32"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="controls">
-          <button id="startBtn" class="btn">开始游戏</button>
-          <button id="restartBtn" class="btn">重新开始</button>
-        </div>
-
-        <div class="instructions">
-          <h2>游戏说明</h2>
-          <ul>
-            <li>使用 <strong>方向键或虚拟按键</strong> 控制移动</li>
-            <li>
-              吃到<strong style="color: #ff5252">红色食物</strong>增加长度和分数
-            </li>
-            <li>
-              撞到<strong style="color: #888">墙壁</strong>或<strong
-                style="color: #4caf50"
-                >自己身体</strong
-              >游戏结束
-            </li>
-            <li>要是还看不懂就报警吧</li>
-          </ul><hr>
-          <div style="text-align: center;" <a href="https://imgloc.com/image/2pLMq"><img 
-            src="https://i.imgs.ovh/2025/07/30/2pLMq.jpeg"
-             alt="2pLMq.jpeg" border="0"
-              height="370"
-                width="290"></a>
-                <p><strong>联系作者汇报bug ↑ </strong></p>
-            <p>© 2025 每秒23兆字节. 保留所有权利</p>
-        <p>作者邮箱：2309194142@qq.com · 网站作者QQ：2309194142</p></div>
-        </div>
-
-        <div class="game-stats">
-          <div>长度: <span id="snake-length">3</span></div>
-          <div>速度: <span id="game-speed">正常</span></div>
-          <div>食物: <span id="food-count">0</span></div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div id="gameOver" class="game-over">
-      <h2 id="gameResult">游戏结束!</h2>
-      <div class="final-score">得分: <span id="finalScore">0</span></div>
-      <button id="playAgainBtn" class="btn">再玩一次</button>
-    </div>
+    <!-- 作品区域 -->
+    <section class="portfolio" id="portfolio">
+      <div class="section-title">
+        <h2>Selected Collection</h2>
+      </div>
+      <div class="portfolio-filters">
+        <button class="filter-btn active" data-filter="all">全部</button>
+        <button class="filter-btn" data-filter="pc">电脑组装</button>
+        <button class="filter-btn" data-filter="web">网站开发</button>
+        <button class="filter-btn" data-filter="photo">摄影</button>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-item show" data-category="pc">
+          <div class="portfolio-img">
+            <img
+              src="https://i.imgs.ovh/2025/08/18/p1hre.jpeg" alt="p1hre.jpeg" width='400' height='250' viewBox='0 0 400 250'><rect width='400' height='250' fill='%233498db' opacity='0.1'/><rect x='100' y='50' width='200' height='150' rx='5' fill='%232c3e50'/><rect x='120' y='70' width='160' height='20' rx='3' fill='%23e74c3c'/><rect x='120' y='100' width='40' height='40' rx='5' fill='%233498db'/><rect x='180' y='100' width='40' height='40' rx='5' fill='%232ecc71'/><rect x='240' y='100' width='40' height='40' rx='5' fill='%23f1c40f'/></svg>"
+              alt="高性能游戏PC"
+            />
+          </div>
+          <div class="portfolio-info">
+            <h3>NVIDIA GeForce RTX3060</h3>
+            <p>RTX 3060基于Ampere架构打造，拥有3584个 CUDA 核心，GPU 频率可达 1.78GHz，配备12GB GDDR6显存</p>
+            <div class="portfolio-tags">
+              <span class="tag">显卡</span>
+              <span class="tag">电脑</span>
+              <span class="tag">散热</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-item show" data-category="web">
+          <div class="portfolio-img">
+            <img
+               src="https://i.imgs.ovh/2025/08/18/p3Ibp.png"  alt="p14gn.jpeg" width='400' height='250' viewBox='0 0 400 250'><rect width='400' height='250' fill='%232ecc71' opacity='0.1'/><rect x='50' y='30' width='300' height='180' rx='10' fill='white'/><rect x='70' y='50' width='100' height='40' rx='5' fill='%232ecc71' opacity='0.6'/><rect x='190' y='50' width='100' height='40' rx='5' fill='%232ecc71' opacity='0.3'/><rect x='70' y='110' width='260' height='80' rx='5' fill='%232ecc71' opacity='0.1'/></svg>"
+              alt="摄影作品集网站"
+            />
+          </div>
+          <div class="portfolio-info">
+            <h3>HTML响应式网站</h3>
+            <p>快速部署响应式网站，并能够将旧站升级响应式特性，多平台自适应
+
+</p>
+            <div class="portfolio-tags">
+              <span class="tag">HTML/CSS</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">响应式</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-item show" data-category="photo">
+          <div class="portfolio-img">
+            <img
+              src="https://i.imgs.ovh/2025/08/18/p33E1.png" alt="p33E1.png" width='400' height='250' viewBox='0 0 400 250'><rect width='400' height='250' fill='%23e74c3c' opacity='0.1'/><circle cx='200' cy='100' r='60' fill='%233498db'/><rect x='50' y='170' width='300' height='40' rx='5' fill='%23f1c40f'/><rect x='180' y='50' width='40' height='40' rx='20' fill='%232c3e50'/></svg>"
+              alt="城市风光摄影"
+            />
+          </div>
+          <div class="portfolio-info">
+            <h3>照片</h3>
+            <p>2025.2.17</p>
+            <div class="portfolio-tags">
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-item" data-category="pc">
+          <div class="portfolio-img">
+            <img
+              src="https://i.imgs.ovh/2025/08/18/p14gn.jpeg" alt="p14gn.jpeg" width='400' height='250' viewBox='0 0 400 250'><rect width='400' height='250' fill='%23f1c40f' opacity='0.1'/><rect x='150' y='50' width='100' height='150' rx='10' fill='%232c3e50'/><rect x='170' y='70' width='60' height='60' rx='5' fill='%23e74c3c'/><rect x='170' y='140' width='60' height='30' rx='3' fill='%233498db'/></svg>"
+              alt="便携式工作站"
+            />
+          </div>
+          <div class="portfolio-info">
+            <h3>AMD Ryxen 5 5600X</h3>
+            <p>该处理器配备6核心12线程设计，基础频率3.7GHz，最高加速频率可达4.6GHz
+                3，三级缓存容量为32MB，热设计功耗保持在65W</p>
+            <div class="portfolio-tags">
+              <span class="tag">R5 5600X</span>
+              <span class="tag">CPU</span>
+              <span class="tag">AMD</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-item" data-category="photo">
+          <div class="portfolio-img">
+            <img
+              src="https://i.imgs.ovh/2025/08/18/pNLHA.jpeg" alt="pNLHA.jpeg" width='400' height='250' viewBox='0 0 400 250'><rect width='400' height='250' fill='%239b59b6' opacity='0.1'/><circle cx='200' cy='125' r='80' fill='%232c3e50'/><circle cx='200' cy='125' r='40' fill='%23e74c3c'/><circle cx='170' cy='100' r='10' fill='%23f1c40f'/></svg>"
+              alt="自然微距摄影"
+            />
+          </div>
+          <div class="portfolio-info">
+            <h3>照片</h3>
+            <p>2025.3.19</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="section-title">
+        <h2>联系我</h2>
+      </div>
+      <div class="contact-container">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="contact-details">
+              <h4>电子邮箱</h4>
+              <a href="mailto:contact@23mb.com">2309194142@qq.com</a>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fab fa-qq"></i>
+            </div>
+            <div class="contact-details">
+              <h4>QQ</h4>
+              <p>2309194142</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="contact-details">
+              <h4>位置</h4>
+              <p>中国 广西 南宁市</p>
+            </div>
+          </div>
+
+          <div class="social-links">
+            <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" title="QQ"><i class="fab fa-qq"></i></a>
+            <a href="#" title="微信"><i class="fab fa-weixin"></i></a>
+            <a href="#" title="Bilibili"><i class="fab fa-bilibili"></i></a>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <form>
+            <div class="form-group">
+              <input type="text" placeholder="您的姓名" required />
+            </div>
+            <div class="form-group">
+              <input type="email" placeholder="电子邮箱" required />
+            </div>
+            <div class="form-group">
+              <input type="text" placeholder="主题" />
+            </div>
+            <div class="form-group">
+              <textarea placeholder="您的留言" required></textarea>
+            </div>
+            <button type="submit" class="btn">发送消息</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">23Megabytes</div>
+        <p>拿代码当投名状，用显卡当见面礼</p>
+
+        <div class="footer-links">
+          <a href="#home">首页</a>
+          <a href="#about">关于</a>
+          <a href="#portfolio">作品</a>
+          <a href="#contact">联系</a>
+        </div>
+
+        <div class="footer-social">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="QQ"><i class="fab fa-qq"></i></a>
+          <a href="#" title="微信"><i class="fab fa-weixin"></i></a>
+          <a href="#" title="Bilibili"><i class="fab fa-bilibili"></i></a>
+        </div>
+
+        <div class="copyright">© 2025 每秒23兆字节. 保留所有权利</div>
+      </div>
+    </footer>
 
     <script>
-      // 获取Canvas元素和上下文
-      const canvas = document.getElementById("gameCanvas");
-      const ctx = canvas.getContext("2d");
-      const perfHint = document.getElementById("perfHint");
-
-      // 设置Canvas尺寸 - 响应式设计
-      function setupCanvas() {
-        const maxWidth = Math.min(700, window.innerWidth * 0.95);
-        const maxHeight = Math.min(500, window.innerHeight * 0.6);
-
-        canvas.width = maxWidth;
-        canvas.height = maxHeight;
-
-        // 手机端特殊处理
-        if (window.innerWidth <= 768) {
-          canvas.width = window.innerWidth * 0.92;
-          canvas.height = window.innerHeight * 0.45;
+      // 导航栏滚动效果
+      window.addEventListener("scroll", function () {
+        const navbar = document.querySelector(".navbar");
+        if (window.scrollY > 50) {
+          navbar.classList.add("scrolled");
+        } else {
+          navbar.classList.remove("scrolled");
         }
+      });
+
+      // 移动端菜单切换
+      const menuToggle = document.getElementById("menuToggle");
+      const navLinks = document.getElementById("navLinks");
+
+      menuToggle.addEventListener("click", function () {
+        navLinks.classList.toggle("active");
+      });
+
+      // 导航链接点击关闭菜单
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("active");
+        });
+      });
+
+      // 技能条动画
+      const skillBars = document.querySelectorAll(".skill-progress");
+
+      function animateSkillBars() {
+        skillBars.forEach((bar) => {
+          const width = bar.getAttribute("data-width");
+          bar.style.width = width + "%";
+        });
       }
 
-      // 游戏变量
-      const gridSize = 20;
-      let tileCountX, tileCountY;
-      let snake = [];
-      let food = {};
-      let dx = gridSize;
-      let dy = 0;
-      let score = 0;
-      let highScore = localStorage.getItem("snakeHighScore") || 0;
-      let gameRunning = false;
-      let lastRenderTime = 0;
-      let gameLoop;
-      let foodCount = 0;
+      // 作品筛选功能（修复版）
+      const filterBtns = document.querySelectorAll(".filter-btn");
+      const portfolioItems = document.querySelectorAll(".portfolio-item");
 
-      // 游戏速度控制
-      const BASE_SPEED = 120; // 毫秒
-      let gameSpeed = BASE_SPEED;
+      filterBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          // 更新按钮状态
+          filterBtns.forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
 
-      // DOM元素
-      const scoreElement = document.getElementById("score");
-      const highScoreElement = document.getElementById("high-score");
-      const finalScoreElement = document.getElementById("finalScore");
-      const gameResultElement = document.getElementById("gameResult");
-      const startBtn = document.getElementById("startBtn");
-      const restartBtn = document.getElementById("restartBtn");
-      const playAgainBtn = document.getElementById("playAgainBtn");
-      const gameOverElement = document.getElementById("gameOver");
-      const snakeLengthElement = document.getElementById("snake-length");
-      const gameSpeedElement = document.getElementById("game-speed");
-      const foodCountElement = document.getElementById("food-count");
+          const filter = this.getAttribute("data-filter");
 
-      // 移动控制按钮
-      const upBtn = document.getElementById("upBtn");
-      const downBtn = document.getElementById("downBtn");
-      const leftBtn = document.getElementById("leftBtn");
-      const rightBtn = document.getElementById("rightBtn");
+          // 筛选项目
+          portfolioItems.forEach((item) => {
+            const category = item.getAttribute("data-category");
 
-      // 初始化游戏
-      function initGame() {
-        setupCanvas();
-
-        // 计算格子数量
-        tileCountX = Math.floor(canvas.width / gridSize);
-        tileCountY = Math.floor(canvas.height / gridSize);
-
-        // 初始化蛇
-        snake = [
-          {
-            x: Math.floor(tileCountX / 2) * gridSize,
-            y: Math.floor(tileCountY / 2) * gridSize,
-          },
-          {
-            x: (Math.floor(tileCountX / 2) - 1) * gridSize,
-            y: Math.floor(tileCountY / 2) * gridSize,
-          },
-          {
-            x: (Math.floor(tileCountX / 2) - 2) * gridSize,
-            y: Math.floor(tileCountY / 2) * gridSize,
-          },
-        ];
-
-        // 生成食物
-        generateFood();
-
-        // 重置移动方向
-        dx = gridSize;
-        dy = 0;
-
-        // 重置分数
-        score = 0;
-        foodCount = 0;
-        gameSpeed = BASE_SPEED;
-        updateScore();
-        updateStats();
-
-        // 更新最高分显示
-        highScoreElement.textContent = highScore;
-
-        // 隐藏游戏结束界面
-        gameOverElement.style.display = "none";
-
-        // 绘制初始状态
-        drawGame();
-      }
-
-      // 生成食物
-      function generateFood() {
-        const maxAttempts = 1000;
-        let attempts = 0;
-        let foodOnSnake;
-
-        do {
-          attempts++;
-          foodOnSnake = false;
-
-          // 确保食物在有效区域内
-          const foodX = Math.floor(Math.random() * (tileCountX - 4) + 2);
-          const foodY = Math.floor(Math.random() * (tileCountY - 4) + 2);
-
-          food = {
-            x: foodX * gridSize,
-            y: foodY * gridSize,
-          };
-
-          // 检查食物是否出现在蛇身上
-          for (let segment of snake) {
-            if (segment.x === food.x && segment.y === food.y) {
-              foodOnSnake = true;
-              break;
-            }
-          }
-
-          if (attempts >= maxAttempts) {
-            gameWin();
-            return;
-          }
-        } while (foodOnSnake);
-      }
-
-      // 绘制游戏
-      function drawGame() {
-        // 清除画布
-        ctx.fillStyle = "#0a0a0a";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // 绘制墙体
-        ctx.fillStyle = "#555";
-        ctx.fillRect(0, 0, canvas.width, gridSize);
-        ctx.fillRect(0, 0, gridSize, canvas.height);
-        ctx.fillRect(canvas.width - gridSize, 0, gridSize, canvas.height);
-        ctx.fillRect(0, canvas.height - gridSize, canvas.width, gridSize);
-
-        // 绘制蛇
-        snake.forEach((segment, index) => {
-          if (index === 0) {
-            ctx.fillStyle = "#4caf50";
-            ctx.shadowColor = "#4caf50";
-            ctx.shadowBlur = 10;
-          } else {
-            const greenValue = 150 - Math.min(15 * index, 100);
-            ctx.fillStyle = `rgb(50, ${greenValue}, 50)`;
-            ctx.shadowBlur = 0;
-          }
-          ctx.fillRect(segment.x, segment.y, gridSize - 1, gridSize - 1);
-
-          // 蛇头眼睛
-          if (index === 0) {
-            ctx.fillStyle = "#000";
-            ctx.shadowBlur = 0;
-            if (dx > 0) {
-              ctx.fillRect(segment.x + 13, segment.y + 5, 3, 3);
-              ctx.fillRect(segment.x + 13, segment.y + 12, 3, 3);
-            } else if (dx < 0) {
-              ctx.fillRect(segment.x + 4, segment.y + 5, 3, 3);
-              ctx.fillRect(segment.x + 4, segment.y + 12, 3, 3);
-            } else if (dy > 0) {
-              ctx.fillRect(segment.x + 5, segment.y + 13, 3, 3);
-              ctx.fillRect(segment.x + 12, segment.y + 13, 3, 3);
+            if (filter === "all" || category === filter) {
+              item.classList.add("show");
             } else {
-              ctx.fillRect(segment.x + 5, segment.y + 4, 3, 3);
-              ctx.fillRect(segment.x + 12, segment.y + 4, 3, 3);
+              item.classList.remove("show");
+            }
+          });
+
+          // 滚动到作品区域顶部
+          document.getElementById("portfolio").scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
+      });
+
+      // 滚动动画
+      const observerOptions = {
+        threshold: 0.1,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target.classList.contains("about")) {
+              animateSkillBars();
+            }
+
+            if (entry.target.classList.contains("portfolio-item")) {
+              entry.target.classList.add("show");
             }
           }
         });
+      }, observerOptions);
 
-        // 绘制食物
-        ctx.fillStyle = "#ff5252";
-        ctx.shadowColor = "#ff5252";
-        ctx.shadowBlur = 15;
-        ctx.beginPath();
-        ctx.arc(
-          food.x + gridSize / 2,
-          food.y + gridSize / 2,
-          gridSize / 2 - 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
+      // 观察元素
+      document.querySelectorAll(".portfolio-item").forEach((item) => {
+        observer.observe(item);
+      });
 
-      // 移动蛇
-      function moveSnake() {
-        // 创建新的蛇头
-        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+      observer.observe(document.querySelector(".about"));
 
-        // 检查是否撞墙
-        if (
-          head.x < gridSize ||
-          head.x >= canvas.width - gridSize ||
-          head.y < gridSize ||
-          head.y >= canvas.height - gridSize
-        ) {
-          gameOver();
-          return;
-        }
-
-        // 检查是否撞到自己
-        for (let i = 0; i < snake.length; i++) {
-          if (head.x === snake[i].x && head.y === snake[i].y) {
-            gameOver();
-            return;
-          }
-        }
-
-        // 在开头添加新的蛇头
-        snake.unshift(head);
-
-        // 检查是否吃到食物
-        if (head.x === food.x && head.y === food.y) {
-          // 吃到食物
-          score++;
-          foodCount++;
-
-          // 每吃5个食物增加速度
-          if (foodCount % 5 === 0 && gameSpeed > 60) {
-            gameSpeed -= 10;
-          }
-
-          updateScore();
-          updateStats();
-
-          // 生成新食物
-          generateFood();
-        } else {
-          // 没吃到食物，移除蛇尾
-          snake.pop();
-        }
-
-        drawGame();
-      }
-
-      // 更新分数显示
-      function updateScore() {
-        scoreElement.textContent = score;
-
-        // 更新最高分
-        if (score > highScore) {
-          highScore = score;
-          highScoreElement.textContent = highScore;
-          localStorage.setItem("snakeHighScore", highScore);
-        }
-      }
-
-      // 更新游戏统计信息
-      function updateStats() {
-        snakeLengthElement.textContent = snake.length;
-        foodCountElement.textContent = foodCount;
-
-        // 更新速度显示
-        if (gameSpeed < 80) {
-          gameSpeedElement.textContent = "快速";
-          gameSpeedElement.style.color = "#ff5252";
-        } else if (gameSpeed < 110) {
-          gameSpeedElement.textContent = "中速";
-          gameSpeedElement.style.color = "#ffde59";
-        } else {
-          gameSpeedElement.textContent = "正常";
-          gameSpeedElement.style.color = "#4caf50";
-        }
-      }
-
-      // 游戏主循环
-      function gameStep() {
-        if (gameRunning) {
-          moveSnake();
-        }
-      }
-
-      // 开始游戏
-      function startGame() {
-        if (!gameRunning) {
-          gameRunning = true;
-          gameLoop = setInterval(gameStep, gameSpeed);
-          startBtn.disabled = true;
-          perfHint.style.display = "block";
-          setTimeout(() => {
-            perfHint.style.display = "none";
-          }, 2000);
-        }
-      }
-
-      // 游戏结束
-      function gameOver() {
-        clearInterval(gameLoop);
-        gameRunning = false;
-        startBtn.disabled = false;
-
-        // 显示最终得分
-        gameResultElement.textContent = "乐色";
-        finalScoreElement.textContent = score;
-        gameOverElement.style.display = "block";
-      }
-
-      // 游戏胜利
-      function gameWin() {
-        clearInterval(gameLoop);
-        gameRunning = false;
-        startBtn.disabled = false;
-
-        // 显示最终得分
-        gameResultElement.textContent = "恭喜获胜!";
-        finalScoreElement.textContent = score;
-        gameOverElement.style.display = "block";
-      }
-
-      // 键盘控制
-      document.addEventListener("keydown", (e) => {
-        if ([37, 38, 39, 40].includes(e.keyCode)) {
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
           e.preventDefault();
-        }
 
-        switch (e.keyCode) {
-          case 37: // 左箭头
-            if (dx === 0) {
-              dx = -gridSize;
-              dy = 0;
-            }
-            break;
-          case 38: // 上箭头
-            if (dy === 0) {
-              dx = 0;
-              dy = -gridSize;
-            }
-            break;
-          case 39: // 右箭头
-            if (dx === 0) {
-              dx = gridSize;
-              dy = 0;
-            }
-            break;
-          case 40: // 下箭头
-            if (dy === 0) {
-              dx = 0;
-              dy = gridSize;
-            }
-            break;
-        }
-      });
+          const targetId = this.getAttribute("href");
+          if (targetId === "#") return;
 
-      // 触摸控制
-      function addDirectionListener(element, dirX, dirY) {
-        element.addEventListener(
-          "touchstart",
-          (e) => {
-            e.preventDefault();
-            if (dx === 0 && dy === 0) return;
-
-            if (dx === 0 && dy !== -dirY) {
-              dx = dirX;
-              dy = dirY;
-            } else if (dy === 0 && dx !== -dirX) {
-              dx = dirX;
-              dy = dirY;
-            }
-          },
-          { passive: false }
-        );
-
-        element.addEventListener("mousedown", () => {
-          if (dx === 0 && dy === 0) return;
-
-          if (dx === 0 && dy !== -dirY) {
-            dx = dirX;
-            dy = dirY;
-          } else if (dy === 0 && dx !== -dirX) {
-            dx = dirX;
-            dy = dirY;
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 70,
+              behavior: "smooth",
+            });
           }
         });
-      }
-
-      addDirectionListener(upBtn, 0, -gridSize);
-      addDirectionListener(downBtn, 0, gridSize);
-      addDirectionListener(leftBtn, -gridSize, 0);
-      addDirectionListener(rightBtn, gridSize, 0);
-
-      // 按钮事件监听
-      startBtn.addEventListener("click", startGame);
-      restartBtn.addEventListener("click", () => {
-        clearInterval(gameLoop);
-        initGame();
-        gameRunning = false;
-        startBtn.disabled = false;
-      });
-      playAgainBtn.addEventListener("click", () => {
-        clearInterval(gameLoop);
-        initGame();
       });
 
-      // 窗口大小变化时重新初始化
-      window.addEventListener("resize", () => {
-        if (!gameRunning) {
-          initGame();
-        }
-      });
+      // 修复按钮悬停问题
+      document
+        .querySelector(".btn")
+        .addEventListener("mouseenter", function () {
+          this.style.backgroundColor = "white";
+          this.style.color = "#3498db";
+        });
 
-      // 初始化游戏
-      initGame();
+      document
+        .querySelector(".btn")
+        .addEventListener("mouseleave", function () {
+          this.style.backgroundColor = "#3498db";
+          this.style.color = "white";
+        });
     </script>
   </body>
 </html>
